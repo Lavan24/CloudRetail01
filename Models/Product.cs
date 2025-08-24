@@ -1,9 +1,10 @@
 ﻿using Azure;
+using Azure.Data.Tables;
 using System.ComponentModel.DataAnnotations;
 
 namespace Retail3.Models
 {
-    public class Product
+    public class Product : ITableEntity
     {
         //---------------------DATA FOR TABLE STORAGE---------------------
         public string PartitionKey { get; set; } = "products";

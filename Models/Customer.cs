@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Azure;
+using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Retail3.Models
 {
-    public class Customer
+    public class Customer : ITableEntity
     {
         //---------------------DATA FOR TABLE STORAGE---------------------
         [ValidateNever]
