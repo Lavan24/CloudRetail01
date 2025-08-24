@@ -75,22 +75,47 @@ namespace Retail3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Customer customer, IFormFile IdImage, [FromServices] IFileStorageService fileStorageService)
         {
+            // Handle file upload first
             if (IdImage != null && IdImage.Length > 0)
             {
-                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(IdImage.FileName)}";
-                await fileStorageService.UploadFileAsync("documents", IdImage);
-                customer.IdImagePath = fileName; // Set the file path
+                try
+                {
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(IdImage.FileName)}";
+                    await fileStorageService.UploadFileAsync("documents", IdImage);
+                    customer.IdImagePath = fileName;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error uploading ID image");
+                    TempData["Error"] = "Error uploading ID image. Please try again.";
+                    return View(customer);
+                }
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // Save customer to database (e.g., Table Storage)
-                // ...
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    _logger.LogWarning("Validation error: {ErrorMessage}", error.ErrorMessage);
+                }
+                TempData["Error"] = "Please correct the validation errors below.";
+                return View(customer);
+            }
 
+            try
+            {
+                // Save customer to database
+                var createdCustomer = await _retailService.AddCustomerAsync(customer);
+
+                TempData["Success"] = $"Customer '{createdCustomer.FullName}' created successfully!";
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(customer);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating customer");
+                TempData["Error"] = $"Error creating customer: {ex.Message}";
+                return View(customer);
+            }
         }
 
         // GET: /Customer/Edit/{id}
@@ -120,42 +145,6 @@ namespace Retail3.Controllers
             }
         }
 
-        // POST: /Customer/Edit/{id}
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(string id, Customer customer)
-        //{
-        //    if (string.IsNullOrEmpty(id))
-        //    {
-        //        TempData["Error"] = "Customer ID is required.";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        TempData["Error"] = "Please correct the validation errors below.";
-        //        return View(customer);
-        //    }
-
-        //    try
-        //    {
-        //        // Ensure the IDs match
-        //        customer.RowKey = id;
-        //        customer.PartitionKey = "customers";
-
-        //        await _retailService.UpdateCustomerAsync(customer);
-
-        //        TempData["Success"] = $"Customer '{customer.FirstName} {customer.LastName}' updated successfully!";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error updating customer: {Id}", id);
-        //        TempData["Error"] = $"Error updating customer: {ex.Message}";
-        //        return View(customer);
-        //    }
-        //}
-
         // GET: /Customer/Delete/{id}
         public async Task<IActionResult> Delete(string id)
         {
@@ -182,31 +171,5 @@ namespace Retail3.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
-        // POST: /Customer/Delete/{id}
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(string id)
-        //{
-        //    if (string.IsNullOrEmpty(id))
-        //    {
-        //        TempData["Error"] = "Customer ID is required.";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    try
-        //    {
-        //        await _retailService.DeleteCustomerAsync(id);
-
-        //        TempData["Success"] = "Customer deleted successfully!";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error deleting customer: {Id}", id);
-        //        TempData["Error"] = $"Error deleting customer: {ex.Message}";
-        //        return RedirectToAction(nameof(Delete), new { id });
-        //    }
-
     }
 }

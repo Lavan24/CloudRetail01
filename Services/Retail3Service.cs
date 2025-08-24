@@ -40,11 +40,13 @@ namespace Retail3.Services
         // Add a new customer
         public async Task<Customer> AddCustomerAsync(Customer customer)
         {
+            customer.PartitionKey = "customers"; // Set a fixed partition key for all customers
             customer.RowKey = Guid.NewGuid().ToString(); // Assign unique ID
             await _tableStorage.AddEntityAsync(CustomersTable, customer); // Save to table storage
             await SendActivityMessageAsync($"New customer registered: {customer.FullName}"); // Log activity
             return customer;
         }
+
 
         // Get all customers
         public async Task<List<Customer>> GetAllCustomersAsync()

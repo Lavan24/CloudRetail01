@@ -64,42 +64,37 @@ namespace Retail3.Controllers
         {
             return View();
         }
-
-        // POST: /Product/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile productImage)
+        public async Task<IActionResult> Create([Bind("CustomerRowKey,ProductRowKey")] Order order)
         {
+            if (string.IsNullOrEmpty(order.CustomerRowKey) || string.IsNullOrEmpty(order.ProductRowKey))
+            {
+                ModelState.AddModelError("", "Customer and Product are required.");
+            }
+
             if (!ModelState.IsValid)
             {
-                // Log validation errors for debugging
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    _logger.LogWarning("Validation error: {ErrorMessage}", error.ErrorMessage);
-                }
-
-                TempData["Error"] = "Please correct the validation errors below.";
-                return View(product);
+                // Repopulate dropdowns
+                ViewBag.Customers = await _retailService.GetAllCustomersAsync();
+                ViewBag.Products = await _retailService.GetAllProductsAsync();
+                return View(order);
             }
 
             try
             {
-                // Set Azure Table properties (in case they're not set by the service)
-                product.PartitionKey = "products";
-                product.RowKey = Guid.NewGuid().ToString();
-
-                await _retailService.AddProductAsync(product, productImage);
-
-                TempData["Success"] = $"Product '{product.ProductName}' created successfully!";
-                return RedirectToAction(nameof(Index));
+                var createdOrder = await _retailService.BuyProductAsync(order.CustomerRowKey, order.ProductRowKey);
+                return RedirectToAction(nameof(Details), new { id = createdOrder.RowKey });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating product: {ProductName}", product.ProductName);
-                TempData["Error"] = $"Error creating product: {ex.Message}";
-                return View(product);
+                ModelState.AddModelError("", ex.Message);
+                ViewBag.Customers = await _retailService.GetAllCustomersAsync();
+                ViewBag.Products = await _retailService.GetAllProductsAsync();
+                return View(order);
             }
         }
+
 
         // GET: /Product/Edit/{id}
         public async Task<IActionResult> Edit(string id)

@@ -7,7 +7,7 @@ namespace Retail3.Models
     public class Order : ITableEntity
     {
         //---------------------DATA FOR TABLE STORAGE---------------------
-        public string PartitionKey { get; set; } = "loans";
+        public string PartitionKey { get; set; } = "orders";
         public string RowKey { get; set; } = Guid.NewGuid().ToString();
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }

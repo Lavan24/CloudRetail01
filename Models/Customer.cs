@@ -37,7 +37,7 @@ namespace Retail3.Models
         [Phone(ErrorMessage = "Invalid phone format")]
         public string Phone { get; set; }
 
-        public string FullName => $"{FirstName} {LastName}";
+        public string FullName=> $"{FirstName} {LastName}";
 
         public string? IdImagePath { get; set; }
     }

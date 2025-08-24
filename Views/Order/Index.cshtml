@@ -1,0 +1,184 @@
+@model IEnumerable<Retail3.Models.Order>
+
+@{
+    ViewData["Title"] = "Order Management";
+}
+
+<div class="container">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Order Management</h1>
+        <a asp-action="Create" class="btn btn-success">Create New Order</a>
+    </div>
+
+    <!-- Order Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Count()</h5>
+                    <p class="card-text">Total Orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Count(o => o.Status == "Delivered")</h5>
+                    <p class="card-text">Delivered</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Count(o => o.Status == "Processing" || o.Status == "Pending")</h5>
+                    <p class="card-text">In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Count(o => o.Status == "Shipped")</h5>
+                    <p class="card-text">Shipped</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5>All Orders</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Order Date</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr class="@GetStatusRowClass(order.Status)">
+                                    <td>@order.RowKey.Substring(0, 8)</td>
+                                    <td>@order.FullName</td>
+                                    <td>@order.ProductName</td>
+                                    <td>@order.OrderDate.ToString("d")</td>
+                                    <td>@order.TotalAmount.ToString("C")</td>
+                                    <td>
+                                        <span class="badge @GetStatusBadgeClass(order.Status)">
+                                            @order.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@order.RowKey" class="btn btn-info btn-sm">Details</a>
+                                            <a asp-action="Edit" asp-route-id="@order.RowKey" class="btn btn-primary btn-sm">Edit</a>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteOrderModal"
+                                                    data-orderid="@order.RowKey"
+                                                    data-customername="@order.FullName">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <h4>No orders found</h4>
+                    <p>Get started by creating your first order.</p>
+                    <a asp-action="Create" class="btn btn-primary">Create First Order</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Order Modal -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Delete Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Delete" method="post">
+                <input type="hidden" name="id" id="deleteOrderId">
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the order for "<span id="deleteCustomerName"></span>"?</p>
+                    <p class="text-danger">This action cannot be undone!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Delivered" => "bg-success",
+            "Shipped" => "bg-info",
+            "Processing" => "bg-warning",
+            "Pending" => "bg-secondary",
+            "Cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusRowClass(string status)
+    {
+        return status switch
+        {
+            "Cancelled" => "table-danger",
+            "Delivered" => "table-success",
+            _ => ""
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Delete Order Modal
+        $('#deleteOrderModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+            modal.find('#deleteOrderId').val(button.data('orderid'));
+            modal.find('#deleteCustomerName').text(button.data('customername'));
+        });
+
+        
+    </script>
+}
