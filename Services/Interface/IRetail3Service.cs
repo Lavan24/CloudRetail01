@@ -10,6 +10,9 @@ namespace Retail3.Services.Interface
         Task<Customer> AddCustomerAsync(Customer customer);
         Task<List<Customer>> GetAllCustomersAsync();
         Task<Customer?> GetCustomerAsync(string rowKey);
+        Task UpdateCustomerAsync(Customer customer);
+        Task DeleteCustomerAsync(string partitionKey, string rowKey);
+
 
         // =====================
         // Product operations

@@ -1,0 +1,24 @@
+@model Retail3.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<h2>Customer Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Name:</strong> @Model.FullName</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Phone:</strong> @Model.Phone</p>
+
+        @if (!string.IsNullOrEmpty(Model.IdImagePath))
+        {
+            <p><strong>ID Image:</strong></p>
+            <img src="@Url.Content("~/uploads/" + Model.IdImagePath)" width="200" />
+        }
+    </div>
+</div>
+
+<a asp-action="Edit" asp-route-partitionKey="@Model.PartitionKey" asp-route-rowKey="@Model.RowKey" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

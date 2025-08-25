@@ -3,6 +3,7 @@ using Retail3.Services.Storage;
 using System.Globalization;
 using System.Text.Json;
 using Retail3.Models;
+using Azure;
 
 
 namespace Retail3.Services
@@ -60,6 +61,18 @@ namespace Retail3.Services
                     CustomersTable, "customers", rowKey);
             }
             catch { return null; }
+        }
+
+        public async Task UpdateCustomerAsync(Customer customer)
+        {
+            await _tableStorage.UpdateEntityAsync(CustomersTable, customer);
+            await SendActivityMessageAsync($"Customer updated: {customer.FullName}");
+        }
+
+        public async Task DeleteCustomerAsync(string partitionKey, string rowKey)
+        {
+            await _tableStorage.DeleteEntityAsync(CustomersTable, partitionKey, rowKey);
+            await SendActivityMessageAsync($"Customer deleted: {rowKey}");
         }
 
         // -------------------- PRODUCTS --------------------

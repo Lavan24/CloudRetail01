@@ -33,10 +33,9 @@ namespace Retail3.Controllers
             }
         }
 
-        // GET: /Customer/Details/{id}
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(string partitionKey, string rowKey)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(rowKey) || string.IsNullOrEmpty(partitionKey))
             {
                 TempData["Error"] = "Customer ID is required.";
                 return RedirectToAction(nameof(Index));
@@ -44,7 +43,7 @@ namespace Retail3.Controllers
 
             try
             {
-                var customer = await _retailService.GetCustomerAsync(id);
+                var customer = await _retailService.GetCustomerAsync(rowKey);
                 if (customer == null)
                 {
                     TempData["Error"] = "Customer not found.";
@@ -54,11 +53,12 @@ namespace Retail3.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving customer details for ID: {Id}", id);
+                _logger.LogError(ex, "Error retrieving customer details: {RowKey}", rowKey);
                 TempData["Error"] = "Error loading customer details.";
                 return RedirectToAction(nameof(Index));
             }
         }
+
 
         // GET: /Customer/Create
         public IActionResult Create()
@@ -118,10 +118,9 @@ namespace Retail3.Controllers
             }
         }
 
-        // GET: /Customer/Edit/{id}
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string partitionKey, string rowKey)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(rowKey) || string.IsNullOrEmpty(partitionKey))
             {
                 TempData["Error"] = "Customer ID is required.";
                 return RedirectToAction(nameof(Index));
@@ -129,7 +128,7 @@ namespace Retail3.Controllers
 
             try
             {
-                var customer = await _retailService.GetCustomerAsync(id);
+                var customer = await _retailService.GetCustomerAsync(rowKey);
                 if (customer == null)
                 {
                     TempData["Error"] = "Customer not found.";
@@ -139,16 +138,16 @@ namespace Retail3.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving customer for edit: {Id}", id);
+                _logger.LogError(ex, "Error retrieving customer for edit: {RowKey}", rowKey);
                 TempData["Error"] = "Error loading customer for editing.";
                 return RedirectToAction(nameof(Index));
             }
         }
 
-        // GET: /Customer/Delete/{id}
-        public async Task<IActionResult> Delete(string id)
+
+        public async Task<IActionResult> Delete(string partitionKey, string rowKey)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(rowKey) || string.IsNullOrEmpty(partitionKey))
             {
                 TempData["Error"] = "Customer ID is required.";
                 return RedirectToAction(nameof(Index));
@@ -156,7 +155,7 @@ namespace Retail3.Controllers
 
             try
             {
-                var customer = await _retailService.GetCustomerAsync(id);
+                var customer = await _retailService.GetCustomerAsync(rowKey);
                 if (customer == null)
                 {
                     TempData["Error"] = "Customer not found.";
@@ -166,10 +165,76 @@ namespace Retail3.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving customer for deletion: {Id}", id);
+                _logger.LogError(ex, "Error retrieving customer for deletion: {RowKey}", rowKey);
                 TempData["Error"] = "Error loading customer for deletion.";
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(string partitionKey, string rowKey, Customer updatedCustomer, IFormFile? IdImage, [FromServices] IFileStorageService fileStorageService)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(updatedCustomer);
+            }
+
+            try
+            {
+                // Ensure correct keys
+                updatedCustomer.PartitionKey = partitionKey;
+                updatedCustomer.RowKey = rowKey;
+
+                // Handle file upload
+                if (IdImage != null && IdImage.Length > 0)
+                {
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(IdImage.FileName)}";
+                    await fileStorageService.UploadFileAsync("documents", IdImage);
+                    updatedCustomer.IdImagePath = fileName;
+                }
+
+                await _retailService.UpdateCustomerAsync(updatedCustomer);
+
+                TempData["Success"] = "Customer updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating customer");
+                TempData["Error"] = "Error updating customer.";
+                return View(updatedCustomer);
+            }
+        }
+
+
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string partitionKey, string rowKey)
+        {
+            try
+            {
+                var customer = await _retailService.GetCustomerAsync(rowKey);
+                if (customer == null)
+                {
+                    TempData["Error"] = "Customer not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await _retailService.DeleteCustomerAsync(partitionKey, rowKey);  // ✅ use service method
+
+                TempData["Success"] = $"Customer '{customer.FullName}' deleted successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting customer: {Id}", rowKey);
+                TempData["Error"] = "Error deleting customer.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+
     }
 }

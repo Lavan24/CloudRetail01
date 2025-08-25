@@ -1,0 +1,21 @@
+@model Retail3.Models.Customer
+
+@{
+    ViewData["Title"] = "Delete Customer";
+}
+
+<h2>Delete Customer</h2>
+
+<h4>Are you sure you want to delete this customer?</h4>
+<div>
+    <strong>@Model.FullName</strong> <br />
+    Email: @Model.Email <br />
+    Phone: @Model.Phone
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="PartitionKey" />
+    <input type="hidden" asp-for="RowKey" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
