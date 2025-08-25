@@ -62,38 +62,37 @@ namespace Retail3.Controllers
         // GET: /Product/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new Product());
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerRowKey,ProductRowKey")] Order order)
+        public async Task<IActionResult> Create(Product product, IFormFile? productImage)
         {
-            if (string.IsNullOrEmpty(order.CustomerRowKey) || string.IsNullOrEmpty(order.ProductRowKey))
-            {
-                ModelState.AddModelError("", "Customer and Product are required.");
-            }
-
             if (!ModelState.IsValid)
             {
-                // Repopulate dropdowns
-                ViewBag.Customers = await _retailService.GetAllCustomersAsync();
-                ViewBag.Products = await _retailService.GetAllProductsAsync();
-                return View(order);
+                TempData["Error"] = "Please correct the validation errors below.";
+                return View(product);
             }
 
             try
             {
-                var createdOrder = await _retailService.BuyProductAsync(order.CustomerRowKey, order.ProductRowKey);
-                return RedirectToAction(nameof(Details), new { id = createdOrder.RowKey });
+                // Ensure partition key is set for new product
+                product.PartitionKey = "products";
+
+                await _retailService.AddProductAsync(product, productImage);
+
+                TempData["Success"] = $"Product '{product.ProductName}' created successfully!";
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                ViewBag.Customers = await _retailService.GetAllCustomersAsync();
-                ViewBag.Products = await _retailService.GetAllProductsAsync();
-                return View(order);
+                _logger.LogError(ex, "Error creating product");
+                TempData["Error"] = $"Error creating product: {ex.Message}";
+                return View(product);
             }
         }
+
 
 
         // GET: /Product/Edit/{id}
