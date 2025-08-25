@@ -112,18 +112,24 @@ namespace Retail3.Services
             var existingProduct = await _tableStorage.GetEntityAsync<Product>(
                 ProductsTable, "products", product.RowKey);
 
+            // Update fields
             existingProduct.ProductName = product.ProductName;
             existingProduct.Description = product.Description;
             existingProduct.Price = product.Price;
             existingProduct.StockQuantity = product.StockQuantity;
             existingProduct.Category = product.Category;
 
+            // Update image if provided
             if (productImage != null && productImage.Length > 0)
                 existingProduct.productImageURL = await _blobStorage.UploadFileAsync(CoversContainer, productImage);
+
+            // Set ETag from the posted model for concurrency
+            existingProduct.ETag = product.ETag;
 
             await _tableStorage.UpdateEntityAsync(ProductsTable, existingProduct);
             await SendActivityMessageAsync($"Product updated: '{product.ProductName}'");
         }
+
 
         public async Task DeleteProductAsync(string rowKey)
         {
