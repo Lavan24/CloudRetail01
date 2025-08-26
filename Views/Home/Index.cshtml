@@ -1,8 +1,489 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdfdfd;
+            color: #012a4a;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(to right, #012a4a, #013a63);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            font-style: italic;
+            color: #89c2d9;
+            margin-bottom: 1rem;
+        }
+
+        /* Navigation - Fixed to span full width */
+        nav {
+            background: #01497c;
+            padding: 0.8rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+            nav a {
+                color: white;
+                text-decoration: none;
+                margin: 0 1.2rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                padding: 0.5rem 1rem;
+                border-radius: 4px;
+            }
+
+                nav a:hover {
+                    color: #a9d6e5;
+                    background-color: #2a6f97;
+                }
+
+        /* Slideshow */
+        .slideshow-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 2rem auto;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide {
+            display: none;
+        }
+
+            .slide img {
+                width: 100%;
+                height: 500px;
+                object-fit: cover;
+                vertical-align: middle;
+            }
+
+        .fade {
+            animation: fade 1.5s ease-in-out;
+        }
+
+        @@keyframes fade {
+            from
+
+        {
+            opacity: .4
+        }
+
+        to {
+            opacity: 1
+        }
+
+        }
+
+        /* Slideshow dots */
+        .dots {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            .dot.active {
+                background-color: #2a6f97;
+            }
+
+        /* About Section */
+        .about {
+            padding: 4rem 2rem;
+            background: linear-gradient(to bottom, #a9d6e5, #89c2d9);
+            color: #012a4a;
+        }
+
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .about h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #013a63;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+            .about h2:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background-color: #2a6f97;
+            }
+
+        .about p {
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .foundation {
+            font-weight: bold;
+            color: #014f86;
+            font-size: 1.3rem;
+        }
+
+        /* Featured Artists */
+        .artists {
+            padding: 3rem 2rem;
+            background-color: white;
+        }
+
+            .artists h2 {
+                text-align: center;
+                font-size: 2rem;
+                margin-bottom: 2rem;
+                color: #01497c;
+            }
+
+        .artist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .artist-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+            .artist-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .artist-img {
+            height: 200px;
+            background-color: #61a5c2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .artist-info {
+            padding: 1.5rem;
+        }
+
+            .artist-info h3 {
+                color: #013a63;
+                margin-bottom: 0.5rem;
+            }
+
+        /* Footer - Fixed to span full width */
+        footer {
+            background: #012a4a;
+            color: white;
+            padding: 2.5rem 1rem 1.5rem;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 1.5rem;
+        }
+
+            .footer-section h3 {
+                color: #a9d6e5;
+                margin-bottom: 1rem;
+                font-size: 1.3rem;
+            }
+
+            .footer-section p {
+                margin-bottom: 0.5rem;
+            }
+
+        .social-links a {
+            display: inline-block;
+            margin-right: 1rem;
+            color: #89c2d9;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+            .social-links a:hover {
+                color: #a9d6e5;
+            }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #013a63;
+            font-size: 0.9rem;
+            color: #89c2d9;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            nav a
+
+        {
+            margin: 0 0.5rem;
+            padding: 0.4rem 0.7rem;
+        }
+
+        .slide img {
+            height: 350px;
+        }
+
+        .about {
+            padding: 3rem 1.5rem;
+        }
+
+            .about h2 {
+                font-size: 2rem;
+            }
+
+            .about p {
+                font-size: 1.1rem;
+            }
+
+        }
+
+        @@media (max-width: 480px) {
+            .logo
+
+        {
+            font-size: 2rem;
+        }
+
+        nav {
+            flex-direction: column;
+            align-items: center;
+        }
+
+            nav a {
+                margin: 0.3rem 0;
+                width: 80%;
+                text-align: center;
+            }
+
+        .slide img {
+            height: 250px;
+        }
+
+        .about {
+            padding: 2rem 1rem;
+        }
+
+            .about h2 {
+                font-size: 1.8rem;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">ART STORE</div>
+        <div class="tagline">Discover Extraordinary Art</div>
+    </header>
+
+    <!-- Slideshow with local images -->
+    <div class="slideshow-container">
+        <div class="slide fade">
+            <img src="Images/Image1.jpg" alt="Artwork 1">
+        </div>
+        <div class="slide fade">
+            <img src="Images/Image2.jpg" alt="Artwork 2">
+        </div>
+        <div class="slide fade">
+            <img src="Images/Image3.jpg" alt="Artwork 3">
+        </div>
+        <div class="slide fade">
+            <img src="Images/Image4.jpg" alt="Artwork 4">
+        </div>
+        <div class="slide fade">
+            <img src="Images/Image5.jpg" alt="Artwork 5">
+        </div>
+        <div class="slide fade">
+            <img src="Images/Image6.jpg" alt="Artwork 6">
+        </div>
+    </div>
+
+    <div class="dots">
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+        <span class="dot" onclick="currentSlide(4)"></span>
+        <span class="dot" onclick="currentSlide(5)"></span>
+        <span class="dot" onclick="currentSlide(6)"></span>
+    </div>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="about-container">
+            <h2>About Art Store</h2>
+            <p class="foundation">Founded in 2004</p>
+            <p>
+                Art Store is a small independent gallery dedicated to promoting
+                local and emerging artists. We offer a curated selection of contemporary artworks ranging
+                from paintings and sculptures to limited-edition prints.
+            </p>
+            <p>
+                Our mission is to make art accessible to everyone, whether you are a first-time buyer
+                or a seasoned collector. We believe that art has the power to inspire, challenge, and
+                transform both individuals and communities.
+            </p>
+            <p>
+                Beyond our online presence, we maintain a physical gallery space where we host monthly
+                exhibitions, artist talks, and community events. Visit us to experience the art in person
+                and connect with the creative community.
+            </p>
+        </div>
+    </section>
+
+    <!-- Featured Artists Section -->
+    <section class="artists">
+        <h2>Featured Artists</h2>
+        <div class="artist-grid">
+            <div class="artist-card">
+                <div class="artist-img">Sarah Johnson</div>
+                <div class="artist-info">
+                    <h3>Sarah Johnson</h3>
+                    <p>Abstract painter known for her vibrant use of color and texture.</p>
+                </div>
+            </div>
+            <div class="artist-card">
+                <div class="artist-img">Michael Chen</div>
+                <div class="artist-info">
+                    <h3>Michael Chen</h3>
+                    <p>Sculptor working with reclaimed materials to create thought-provoking pieces.</p>
+                </div>
+            </div>
+            <div class="artist-card">
+                <div class="artist-img">Elena Rodriguez</div>
+                <div class="artist-info">
+                    <h3>Elena Rodriguez</h3>
+                    <p>Photographer capturing urban landscapes and human connections.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ART STORE</h3>
+                <p>Bringing exceptional art to everyone since 2004.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>CONNECT WITH US</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>NEWSLETTER</h3>
+                <p>Subscribe for updates on new arrivals and events.</p>
+                <p>Email: info@artstore.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Art Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+          let slides = document.getElementsByClassName("slide");
+          let dots = document.getElementsByClassName("dot");
+
+          for (let i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+          }
+
+          slideIndex++;
+          if (slideIndex > slides.length) {slideIndex = 1}
+
+          for (let i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+          }
+
+          slides[slideIndex-1].style.display = "block";
+          dots[slideIndex-1].className += " active";
+          setTimeout(showSlides, 4000); // Change image every 4 seconds
+        }
+
+        function currentSlide(n) {
+          slideIndex = n - 1;
+          showSlides();
+        }
+    </script>
+</body>
+</html>
