@@ -4,83 +4,329 @@
     ViewData["Title"] = "Create Product";
 }
 
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+        --success-green: #28a745;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--light-blue-2);
+        display: flex;
+        align-items: center;
+    }
+
+    .page-icon {
+        background-color: var(--light-blue-2);
+        color: var(--dark-blue-1);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .alert {
+        border-radius: 6px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #155724;
+        border-left: 4px solid var(--success-green);
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+
+    .validation-summary-errors {
+        background-color: rgba(220, 53, 69, 0.05);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 6px;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+
+        .validation-summary-errors ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label.control-label {
+        font-weight: 500;
+        color: var(--dark-blue-2);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 0.75rem;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+        .form-control:focus {
+            border-color: var(--medium-blue-1);
+            box-shadow: 0 0 0 0.2rem rgba(42, 111, 151, 0.25);
+        }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .text-danger {
+        color: #d32f2f !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .file-upload-section {
+        background-color: rgba(169, 214, 229, 0.15);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--medium-blue-2);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 0.7rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        box-shadow: 0 3px 7px rgba(42, 111, 151, 0.2);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(42, 111, 151, 0.25);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .icon-left {
+        margin-right: 0.5rem;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-group-prepend {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 5;
+        color: #6c757d;
+    }
+
+    .currency-input {
+        padding-left: 30px;
+    }
+
+    @@media (max-width: 768px) {
+        .container
+
+    {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    }
+</style>
+
 <div class="container">
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle mr-2"></i>@TempData["Success"]
+        </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle mr-2"></i>@TempData["Error"]
+        </div>
     }
 
-    <h1>Create New Product</h1>
-    <hr />
+    <h1>
+        <span class="page-icon">
+            <i class="fas fa-cube"></i>
+        </span>
+        Create New Product
+    </h1>
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
 
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
-                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    <div asp-validation-summary="All" class="validation-summary-errors"></div>
                 }
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label asp-for="ProductName" class="control-label"></label>
-                            <input asp-for="ProductName" class="form-control" />
+                            <label asp-for="ProductName" class="control-label">Product Name</label>
+                            <input asp-for="ProductName" class="form-control" placeholder="Enter product name" />
                             <span asp-validation-for="ProductName" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label asp-for="Category" class="control-label"></label>
-                            <input asp-for="Category" class="form-control" />
+                            <label asp-for="Category" class="control-label">Category</label>
+                            <input asp-for="Category" class="form-control" placeholder="Enter category" />
                             <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Description" class="control-label"></label>
-                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <label asp-for="Description" class="control-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label asp-for="Price" class="control-label"></label>
-                            <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+                            <label asp-for="Price" class="control-label">Price</label>
+                            <div class="input-group">
+                                <span class="input-group-prepend">$</span>
+                                <input asp-for="Price" class="form-control currency-input" type="number" step="0.01" min="0" placeholder="0.00" />
+                            </div>
                             <span asp-validation-for="Price" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label asp-for="StockQuantity" class="control-label"></label>
-                            <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                            <label asp-for="StockQuantity" class="control-label">Stock Quantity</label>
+                            <input asp-for="StockQuantity" class="form-control" type="number" min="0" placeholder="Enter quantity" />
                             <span asp-validation-for="StockQuantity" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label for="productImage" class="control-label">Product Image</label>
-                    <input type="file" name="productImage" class="form-control" accept="image/*" />
-                    <small class="text-muted">Upload product image (optional)</small>
+                <div class="file-upload-section">
+                    <div class="form-group mb-3">
+                        <label for="productImage" class="control-label">Product Image</label>
+                        <input type="file" name="productImage" class="form-control" accept="image/*" />
+                        <small class="text-muted">Upload product image (JPG, PNG, or GIF - Max 5MB)</small>
+                    </div>
                 </div>
 
-                <div class="form-group mt-4">
-                    <button type="submit" class="btn btn-primary">Create Product</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle icon-left"></i>Create Product
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left icon-left"></i>Back to List
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 @section Scripts {
     @{

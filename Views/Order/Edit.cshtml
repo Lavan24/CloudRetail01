@@ -6,90 +6,171 @@
     var products = ViewBag.Products as List<Retail3.Models.Product>;
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title">Edit Order</h3>
+<style>
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--dark-blue-2) 0%, var(--dark-blue-4) 100%);
+        color: white;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.25rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        font-weight: 600;
+        color: var(--dark-blue-3);
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        margin-right: 0.75rem;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        border-color: var(--medium-blue-1);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--dark-blue-3);
+        border-color: var(--dark-blue-3);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        border-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--light-blue-2);
+        border-color: var(--light-blue-2);
+        color: var(--dark-blue-1);
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="container" style="max-width: 900px; margin: 2rem auto;">
+    <h2>Edit Order</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-edit mr-2"></i>Edit Order
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" asp-route-id="@Model.RowKey" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <input type="hidden" asp-for="RowKey" />
+
+                <div class="form-group">
+                    <label asp-for="CustomerRowKey">Customer</label>
+                    <select asp-for="CustomerRowKey" class="form-control" required>
+                        <option value="">-- Select Customer --</option>
+                        @if (customers != null)
+                        {
+                            foreach (var customer in customers)
+                            {
+                                <option value="@customer.RowKey" @@(Model.CustomerRowKey == customer.RowKey ? "selected" : "")>
+                                    @customer.FullName
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CustomerRowKey" class="text-danger"></span>
                 </div>
-                <div class="card-body">
-                  <form asp-action="Edit" asp-route-id="@Model.RowKey" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <input type="hidden" asp-for="RowKey" />
-
-    <div class="form-group mb-3">
-        <label asp-for="CustomerRowKey" class="control-label">Customer</label>
-        <select asp-for="CustomerRowKey" class="form-control" required>
-            <option value="">-- Select Customer --</option>
-            @if (customers != null)
-            {
-                foreach (var customer in customers)
-                {
-                    <option value="@customer.RowKey" @@(Model.CustomerRowKey == customer.RowKey ? "selected" : "")>
-                        @customer.FullName
-                    </option>
-                }
-            }
-        </select>
-        <span asp-validation-for="CustomerRowKey" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="ProductRowKey" class="control-label">Product</label>
-        <select asp-for="ProductRowKey" class="form-control" required>
-            <option value="">-- Select Product --</option>
-            @if (products != null)
-            {
-                foreach (var product in products)
-                {
-                    <option value="@product.RowKey" @@(Model.ProductRowKey == product.RowKey ? "selected" : "")>
-                        @product.ProductName - @product.Price.ToString("C")
-                    </option>
-                }
-            }
-        </select>
-        <span asp-validation-for="ProductRowKey" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="OrderDate" class="control-label">Order Date</label>
-        <input asp-for="OrderDate" class="form-control" type="datetime-local" />
-        <span asp-validation-for="OrderDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="TotalAmount" class="control-label">Total Amount</label>
-        <input asp-for="TotalAmount" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="TotalAmount" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Status" class="control-label">Status</label>
-        <select asp-for="Status" class="form-control">
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-            <option value="Returned">Returned</option>
-        </select>
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a asp-action="Details" asp-route-id="@Model.RowKey" class="btn btn-secondary">Cancel</a>
-    </div>
-</form>
-
+                <div class="form-group">
+                    <label asp-for="ProductRowKey">Product</label>
+                    <select asp-for="ProductRowKey" class="form-control" required>
+                        <option value="">-- Select Product --</option>
+                        @if (products != null)
+                        {
+                            foreach (var product in products)
+                            {
+                                <option value="@product.RowKey" @@(Model.ProductRowKey == product.RowKey ? "selected" : "")>
+                                    @product.ProductName - @product.Price.ToString("C")
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="ProductRowKey" class="text-danger"></span>
                 </div>
-            </div>
+
+                <div class="form-group">
+                    <label asp-for="OrderDate">Order Date</label>
+                    <input asp-for="OrderDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="OrderDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TotalAmount">Total Amount</label>
+                    <input asp-for="TotalAmount" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Status">Status</label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="Pending" @@(Model.Status == "Pending" ? "selected" : "")>Pending</option>
+                        <option value="Completed" @@(Model.Status == "Completed" ? "selected" : "")>Completed</option>
+                        <option value="Cancelled" @@(Model.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
+                        <option value="Returned" @@(Model.Status == "Returned" ? "selected" : "")>Returned</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i>Save Changes</button>
+                    <a asp-action="Details" asp-route-id="@Model.RowKey" class="btn btn-secondary"><i class="fas fa-times mr-2"></i>Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @@await Html.RenderPartialAsync("_ValidationScriptsPartial")
 }

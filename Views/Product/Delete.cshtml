@@ -4,44 +4,299 @@
     ViewData["Title"] = "Delete Product";
 }
 
-<div class="container mt-4">
-    <h1>Delete Product</h1>
-    <hr />
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+        --warning-red: #dc3545;
+        --warning-red-dark: #c82333;
+        --warning-orange: #fd7e14;
+    }
 
-    <div class="alert alert-warning">
-        <strong>Are you sure you want to delete this product?</strong>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .delete-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+        color: var(--warning-red);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(220, 53, 69, 0.3);
+        display: flex;
+        align-items: center;
+    }
+
+    .page-icon {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--warning-red);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .warning-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.2rem;
+        background-color: rgba(220, 53, 69, 0.08);
+        border-radius: 8px;
+        border-left: 4px solid var(--warning-red);
+    }
+
+    .warning-icon {
+        color: var(--warning-red);
+        font-size: 1.8rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .warning-text {
+        color: var(--dark-blue-1);
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .product-details {
+        background-color: rgba(169, 214, 229, 0.15);
+        border-radius: 8px;
+        padding: 1.8rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--medium-blue-2);
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 1.2rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .detail-label {
+        flex: 0 0 180px;
+        font-weight: 600;
+        color: var(--dark-blue-3);
+    }
+
+    .detail-value {
+        flex: 1;
+        color: #495057;
+    }
+
+    .product-name {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--dark-blue-1);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .price-value {
+        font-weight: 600;
+        color: var(--dark-blue-2);
+        font-size: 1.1rem;
+    }
+
+    .image-container {
+        margin-top: 1rem;
+        padding: 1.2rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+    .product-image {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 4px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .no-image {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 0.7rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: var(--warning-red);
+        box-shadow: 0 3px 7px rgba(220, 53, 69, 0.2);
+    }
+
+        .btn-danger:hover {
+            background-color: var(--warning-red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .icon-left {
+        margin-right: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .delete-container
+
+    {
+        padding: 1.5rem;
+    }
+
+    .detail-row {
+        flex-direction: column;
+    }
+
+    .detail-label {
+        flex: none;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    }
+</style>
+
+<div class="delete-container">
+    <h1>
+        <span class="page-icon">
+            <i class="fas fa-trash-alt"></i>
+        </span>
+        Delete Product
+    </h1>
+
+    <div class="warning-header">
+        <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <p class="warning-text">
+            <strong>Warning:</strong> You are about to permanently delete this product.
+            This action cannot be undone and will remove all product information from the system.
+        </p>
     </div>
 
-    <dl class="row">
-        <dt class="col-sm-3">Product Name</dt>
-        <dd class="col-sm-9">@Model.ProductName</dd>
+    <div class="product-details">
+        <div class="product-name">@Model.ProductName</div>
 
-        <dt class="col-sm-3">Category</dt>
-        <dd class="col-sm-9">@Model.Category</dd>
+        <div class="detail-row">
+            <div class="detail-label">Product Name:</div>
+            <div class="detail-value">@Model.ProductName</div>
+        </div>
 
-        <dt class="col-sm-3">Price</dt>
-        <dd class="col-sm-9">@Model.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</dd>
+        <div class="detail-row">
+            <div class="detail-label">Category:</div>
+            <div class="detail-value">@Model.Category</div>
+        </div>
 
-        <dt class="col-sm-3">Stock</dt>
-        <dd class="col-sm-9">@Model.StockQuantity</dd>
+        <div class="detail-row">
+            <div class="detail-label">Price:</div>
+            <div class="detail-value price-value">@Model.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</div>
+        </div>
 
-        <dt class="col-sm-3">Image</dt>
-        <dd class="col-sm-9">
-            @if (!string.IsNullOrEmpty(Model.productImageURL))
-            {
-                <img src="@Model.productImageURL" alt="@Model.ProductName"
-                     class="img-thumbnail" style="max-width:150px;" />
-            }
-            else
-            {
-                <span class="text-muted">No Image</span>
-            }
-        </dd>
-    </dl>
+        <div class="detail-row">
+            <div class="detail-label">Stock Quantity:</div>
+            <div class="detail-value">@Model.StockQuantity</div>
+        </div>
+
+        <div class="detail-row" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+            <div class="detail-label">Product Image:</div>
+            <div class="detail-value">
+                @if (!string.IsNullOrEmpty(Model.productImageURL))
+                {
+                    <div class="image-container">
+                        <img src="@Model.productImageURL" alt="@Model.ProductName" class="product-image" style="max-width: 200px;" />
+                    </div>
+                }
+                else
+                {
+                    <span class="no-image">No image available</span>
+                }
+            </div>
+        </div>
+    </div>
 
     <form asp-action="Delete" method="post">
         <input type="hidden" asp-for="RowKey" />
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt icon-left"></i>Confirm Delete
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-times icon-left"></i>Cancel
+            </a>
+        </div>
     </form>
 </div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

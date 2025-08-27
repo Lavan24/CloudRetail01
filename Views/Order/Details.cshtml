@@ -1,61 +1,200 @@
+@using System.Globalization
 @model Retail3.Models.Order
 
 @{
     ViewData["Title"] = "Order Details";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title">Order Details</h3>
-                </div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-sm-4">Order ID</dt>
-                        <dd class="col-sm-8">@Model.RowKey</dd>
+<style>
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+    }
 
-                        <dt class="col-sm-4">Customer</dt>
-                        <dd class="col-sm-8">@Model.FullName</dd>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
 
-                        <dt class="col-sm-4">Product</dt>
-                        <dd class="col-sm-8">@Model.ProductName</dd>
+    h2 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--light-blue-2);
+    }
 
-                        <dt class="col-sm-4">Price</dt>
-                        <dd class="col-sm-8">@Model.Price</dd>
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
 
-                        <dt class="col-sm-4">Order Date</dt>
-                        <dd class="col-sm-8">@Model.OrderDate.ToString("yyyy-MM-dd HH:mm")</dd>
+    .card-header {
+        background: linear-gradient(135deg, var(--dark-blue-2) 0%, var(--dark-blue-4) 100%);
+        color: white;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.25rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
 
-                        <dt class="col-sm-4">Total Amount</dt>
-                        <dd class="col-sm-8">@Model.TotalAmount.ToString("C")</dd>
+    .card-body {
+        padding: 2rem;
+    }
 
-                        <dt class="col-sm-4">Status</dt>
-                        <dd class="col-sm-8">
-                            <span class="badge @(Model.Status == "Completed" ? "bg-success" : "bg-warning")">
-                                @Model.Status
-                            </span>
-                        </dd>
-                    </dl>
-                </div>
-                <div class="card-footer">
-                    <a asp-action="Edit" asp-route-id="@Model.RowKey" class="btn btn-primary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@Model.RowKey" class="btn btn-danger">Delete</a>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    .detail-row {
+        display: flex;
+        margin-bottom: 1.2rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
 
-                    @if (Model.Status == "Completed")
-                    {
-                        <form asp-action="Return" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="@Model.RowKey" />
-                            <button type="submit" class="btn btn-warning"
-                                    onclick="return confirm('Are you sure you want to return this product?')">
-                                Return Product
-                            </button>
-                        </form>
-                    }
+    .detail-label {
+        flex: 0 0 180px;
+        font-weight: 600;
+        color: var(--dark-blue-3);
+    }
+
+    .detail-value {
+        flex: 1;
+        color: #495057;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        margin-right: 0.75rem;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        border-color: var(--medium-blue-1);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            border-color: var(--dark-blue-3);
+            transform: translateY(-2px);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        border-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            border-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .btn-warning {
+        background-color: #f0ad4e;
+        border-color: #f0ad4e;
+        color: white;
+    }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+            border-color: #ec971f;
+            transform: translateY(-2px);
+        }
+
+    .action-buttons {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="container" style="max-width: 900px; margin: 2rem auto;">
+    <h2>Order Details</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-shopping-cart mr-2"></i>Order Information
+        </div>
+        <div class="card-body">
+            <div class="detail-row">
+                <div class="detail-label">Order ID:</div>
+                <div class="detail-value">@Model.RowKey</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">Customer:</div>
+                <div class="detail-value">@Model.FullName</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">Product:</div>
+                <div class="detail-value">@Model.ProductName</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">Price:</div>
+                <div class="detail-value">@Model.Price.ToString( new CultureInfo("en-ZA"))</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">Order Date:</div>
+                <div class="detail-value">@Model.OrderDate.ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">Total Amount:</div>
+                <div class="detail-value">@Model.TotalAmount.ToString("C")</div>
+            </div>
+
+            <div class="detail-row" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                <div class="detail-label">Status:</div>
+                <div class="detail-value">
+                    <span class="badge @(Model.Status == "Completed" ? "bg-success" : "bg-warning")">
+                        @Model.Status
+                    </span>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="action-buttons">
+        <a asp-action="Edit" asp-route-id="@Model.RowKey" class="btn btn-primary">
+            <i class="fas fa-edit mr-2"></i>Edit Order
+        </a>
+        <a asp-action="Delete" asp-route-id="@Model.RowKey" class="btn btn-warning">
+            <i class="fas fa-trash mr-2"></i>Delete Order
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left mr-2"></i>Back to List
+        </a>
+
+        @if (Model.Status == "Completed")
+        {
+            <form asp-action="Return" method="post" class="d-inline">
+                <input type="hidden" name="id" value="@Model.RowKey" />
+                <button type="submit" class="btn btn-warning"
+                        onclick="return confirm('Are you sure you want to return this product?')">
+                    Return Product
+                </button>
+            </form>
+        }
+    </div>
 </div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

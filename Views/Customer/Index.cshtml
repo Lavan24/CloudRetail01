@@ -4,44 +4,279 @@
     ViewData["Title"] = "Customers";
 }
 
-<h1>Customer List</h1>
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+        --success-green: #28a745;
+    }
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New Customer</a>
-</p>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
 
-<table class="table table-striped table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.FirstName)</th>
-            <th>@Html.DisplayNameFor(model => model.LastName)</th>
-            <th>@Html.DisplayNameFor(model => model.Email)</th>
-            <th>@Html.DisplayNameFor(model => model.Phone)</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.FirstName)</td>
-                <td>@Html.DisplayFor(modelItem => item.LastName)</td>
-                <td>@Html.DisplayFor(modelItem => item.Email)</td>
-                <td>@Html.DisplayFor(modelItem => item.Phone)</td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <a asp-action="Edit" asp-route-partitionKey="@item.PartitionKey" asp-route-rowKey="@item.RowKey" class="btn btn-primary btn-sm">Edit</a>
-                        <a asp-action="Details" asp-route-partitionKey="@item.PartitionKey" asp-route-rowKey="@item.RowKey" class="btn btn-info btn-sm">Details</a>
-                        <a asp-action="Delete" asp-route-partitionKey="@item.PartitionKey" asp-route-rowKey="@item.RowKey" class="btn btn-danger btn-sm">Delete</a>
-                    </div>
-                </td>
-            </tr>
+    .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 15px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--light-blue-2);
+    }
+
+    h1 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .btn-success {
+        background: linear-gradient(to bottom, var(--success-green), #218838);
+        border: none;
+        border-radius: 6px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        box-shadow: 0 3px 7px rgba(0,0,0,0.1);
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-success:hover {
+            background: linear-gradient(to bottom, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
         }
-    </tbody>
-</table>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info" role="alert">
-        No customers found. <a asp-action="Create">Create a new customer</a> to get started.
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+        .custom-table thead {
+            background: linear-gradient(135deg, var(--dark-blue-2) 0%, var(--dark-blue-4) 100%);
+            color: white;
+        }
+
+        .custom-table th {
+            padding: 1rem 1.2rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .custom-table tbody tr {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: background-color 0.2s;
+        }
+
+            .custom-table tbody tr:hover {
+                background-color: rgba(169, 214, 229, 0.1);
+            }
+
+        .custom-table td {
+            padding: 1.2rem;
+            color: #495057;
+        }
+
+            .custom-table td:first-child {
+                font-weight: 500;
+                color: var(--dark-blue-2);
+            }
+
+    .action-cell {
+        width: 240px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 0.9rem;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            transform: translateY(-1px);
+        }
+
+    .btn-info {
+        background-color: var(--light-blue-2);
+        border: none;
+        color: var(--dark-blue-1);
+    }
+
+        .btn-info:hover {
+            background-color: var(--light-blue-1);
+            color: var(--dark-blue-1);
+            transform: translateY(-1px);
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-icon {
+        font-size: 3.5rem;
+        color: var(--light-blue-2);
+        margin-bottom: 1rem;
+    }
+
+    .empty-title {
+        color: var(--dark-blue-2);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    .icon-left {
+        margin-right: 0.4rem;
+    }
+
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+    .action-cell {
+        width: auto;
+    }
+
+    .custom-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    }
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Customer List</h1>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus-circle icon-left"></i>Create New Customer
+        </a>
     </div>
-}
+
+    @if (Model.Any())
+    {
+        <div class="table-container">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.FirstName)</th>
+                        <th>@Html.DisplayNameFor(model => model.LastName)</th>
+                        <th>@Html.DisplayNameFor(model => model.Email)</th>
+                        <th>@Html.DisplayNameFor(model => model.Phone)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.FirstName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LastName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                            <td class="action-cell">
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Edit" asp-route-partitionKey="@item.PartitionKey" asp-route-rowKey="@item.RowKey" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit icon-left"></i>Edit
+                                    </a>
+                                    <a asp-action="Details" asp-route-partitionKey="@item.PartitionKey" asp-route-rowKey="@item.RowKey" class="btn btn-info btn-sm">
+                                        <i class="fas fa-info-circle icon-left"></i>Details
+                                    </a>
+                                    <a asp-action="Delete" asp-route-partitionKey="@item.PartitionKey" asp-route-rowKey="@item.RowKey" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt icon-left"></i>Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3 class="empty-title">No customers found</h3>
+            <p class="empty-text">Get started by creating your first customer record.</p>
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus-circle icon-left"></i>Create New Customer
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

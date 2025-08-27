@@ -4,46 +4,254 @@
     ViewData["Title"] = "Edit Customer";
 }
 
-<h2>Edit Customer</h2>
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+    }
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="PartitionKey" />
-    <input type="hidden" asp-for="RowKey" />
-    <input type="hidden" asp-for="ETag" />
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
+    .edit-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
 
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
+    h2 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--light-blue-2);
+    }
 
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-    <div class="form-group">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
+    label {
+        font-weight: 500;
+        color: var(--dark-blue-2);
+        margin-bottom: 0.5rem;
+    }
 
-    <div class="form-group">
-        <label>Upload ID Image</label>
-        <input type="file" name="IdImage" class="form-control" />
-        @if (!string.IsNullOrEmpty(Model.IdImagePath))
-        {
-            <p>Current: <img src="@Url.Content("~/uploads/" + Model.IdImagePath)" width="100" /></p>
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 0.75rem;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+        .form-control:focus {
+            border-color: var(--medium-blue-1);
+            box-shadow: 0 0 0 0.2rem rgba(42, 111, 151, 0.25);
         }
+
+    .text-danger {
+        color: #d32f2f !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .file-upload-section {
+        background-color: rgba(169, 214, 229, 0.15);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--medium-blue-2);
+    }
+
+    .current-image {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+        .current-image p {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-blue-2);
+        }
+
+        .current-image img {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 3px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 0.7rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        box-shadow: 0 3px 7px rgba(42, 111, 151, 0.2);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(42, 111, 151, 0.25);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .icon-left {
+        margin-right: 0.5rem;
+    }
+
+    .form-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-icon {
+        background-color: var(--light-blue-2);
+        color: var(--dark-blue-1);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+    }
+
+    @@media (max-width: 576px) {
+        .edit-container
+
+    {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+</style>
+
+<div class="edit-container">
+    <div class="form-header">
+        <div class="form-icon">
+            <i class="fas fa-user-edit"></i>
+        </div>
+        <h2>Edit Customer</h2>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="PartitionKey" />
+        <input type="hidden" asp-for="RowKey" />
+        <input type="hidden" asp-for="ETag" />
+
+        <div class="form-group">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" type="email" placeholder="Enter email address" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Phone"></label>
+            <input asp-for="Phone" class="form-control" placeholder="Enter phone number" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="file-upload-section">
+            <div class="form-group">
+                <label>Upload ID Image</label>
+                <input type="file" name="IdImage" class="form-control" />
+                <small class="form-text text-muted">Select a new image to replace the current one (optional)</small>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.IdImagePath))
+            {
+                <div class="current-image">
+                    <p>Current ID Image:</p>
+                    <img src="@Url.Content("~/uploads/" + Model.IdImagePath)" width="150" alt="Current ID image" />
+                </div>
+            }
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save icon-left"></i>Save Changes
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-times icon-left"></i>Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

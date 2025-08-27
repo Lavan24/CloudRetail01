@@ -4,8 +4,147 @@
     ViewData["Title"] = "Create Customer";
 }
 
-<div class="container">
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+    }
 
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--light-blue-2);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 0.75rem;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--medium-blue-1);
+            box-shadow: 0 0 0 0.2rem rgba(42, 111, 151, 0.25);
+        }
+
+    label.control-label {
+        font-weight: 500;
+        color: var(--dark-blue-2);
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        border-color: var(--medium-blue-1);
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            border-color: var(--dark-blue-3);
+            transform: translateY(-2px);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        border-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            border-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .alert {
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-success {
+        background-color: rgba(169, 214, 229, 0.2);
+        border: 1px solid var(--light-blue-3);
+        color: var(--dark-blue-3);
+    }
+
+    .alert-danger {
+        background-color: rgba(244, 67, 54, 0.1);
+        border: 1px solid #f44336;
+        color: #c62828;
+    }
+
+    .text-danger {
+        color: #d32f2f !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .validation-summary-errors {
+        color: #d32f2f;
+        background-color: rgba(244, 67, 54, 0.05);
+        border: 1px solid #f44336;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .validation-summary-errors ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+    hr {
+        border-top: 1px solid var(--light-blue-3);
+        margin: 1.5rem 0;
+    }
+
+    .form-title {
+        color: var(--dark-blue-2);
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container">
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success">@TempData["Success"]</div>
@@ -16,43 +155,44 @@
     }
 
     <h1>Create New Customer</h1>
-    <hr />
+
+    <div class="form-title">Please fill in the customer details below</div>
 
     <div asp-validation-summary="All" class="text-danger"></div>
 
-
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <form asp-action="Create" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
 
                 <div class="form-group mb-3">
                     <label asp-for="FirstName" class="control-label"></label>
-                    <input asp-for="FirstName" class="form-control" />
+                    <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <label asp-for="LastName" class="control-label"></label>
-                    <input asp-for="LastName" class="form-control" />
+                    <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <label asp-for="Email" class="control-label"></label>
-                    <input asp-for="Email" class="form-control" type="email" />
+                    <input asp-for="Email" class="form-control" type="email" placeholder="Enter email address" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <label asp-for="Phone" class="control-label"></label>
-                    <input asp-for="Phone" class="form-control" type="tel" />
+                    <input asp-for="Phone" class="form-control" type="tel" placeholder="Enter phone number" />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
-                <div class="form-group">
-                    <label for="IdImage">Upload ID Image</label>
+                <div class="form-group mb-4">
+                    <label for="IdImage" class="control-label">Upload ID Image</label>
                     <input type="file" name="IdImage" class="form-control" />
+                    <small class="form-text text-muted">Supported formats: JPG, PNG, PDF (Max 5MB)</small>
                 </div>
 
                 <!-- Hidden fields for TableEntity properties -->
@@ -61,9 +201,9 @@
                 <input type="hidden" asp-for="Timestamp" />
                 <input type="hidden" asp-for="ETag" />
 
-                <div class="form-group mt-3">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <div class="form-group mt-4">
+                    <input type="submit" value="Create Customer" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary ml-2">Back to List</a>
                 </div>
             </form>
         </div>
@@ -74,5 +214,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
 }

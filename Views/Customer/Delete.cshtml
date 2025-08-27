@@ -4,18 +4,197 @@
     ViewData["Title"] = "Delete Customer";
 }
 
-<h2>Delete Customer</h2>
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+        --warning-red: #dc3545;
+        --warning-red-dark: #c82333;
+    }
 
-<h4>Are you sure you want to delete this customer?</h4>
-<div>
-    <strong>@Model.FullName</strong> <br />
-    Email: @Model.Email <br />
-    Phone: @Model.Phone
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .delete-container {
+        max-width: 650px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+        color: var(--warning-red);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .warning-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background-color: rgba(220, 53, 69, 0.08);
+        border-radius: 8px;
+        border-left: 4px solid var(--warning-red);
+    }
+
+    .warning-icon {
+        color: var(--warning-red);
+        font-size: 2rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .warning-text {
+        color: var(--dark-blue-1);
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .customer-details {
+        background-color: rgba(169, 214, 229, 0.15);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--medium-blue-2);
+    }
+
+    .detail-item {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+
+    .detail-label {
+        flex: 0 0 120px;
+        font-weight: 600;
+        color: var(--dark-blue-3);
+    }
+
+    .detail-value {
+        flex: 1;
+        color: #495057;
+    }
+
+    .full-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark-blue-1);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 0.7rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-danger {
+        background-color: var(--warning-red);
+        border-color: var(--warning-red);
+        box-shadow: 0 3px 7px rgba(220, 53, 69, 0.2);
+    }
+
+        .btn-danger:hover {
+            background-color: var(--warning-red-dark);
+            border-color: var(--warning-red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        border-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            border-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .icon-left {
+        margin-right: 0.5rem;
+    }
+</style>
+
+<div class="delete-container">
+    <h2>Delete Customer</h2>
+
+    <div class="warning-header">
+        <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <p class="warning-text">You are about to permanently delete this customer record. This action cannot be undone.</p>
+    </div>
+
+    <div class="customer-details">
+        <div class="full-name">@Model.FullName</div>
+
+        <div class="detail-item">
+            <div class="detail-label">Email:</div>
+            <div class="detail-value">@Model.Email</div>
+        </div>
+
+        <div class="detail-item">
+            <div class="detail-label">Phone:</div>
+            <div class="detail-value">@Model.Phone</div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.IdImagePath))
+        {
+            <div class="detail-item">
+                <div class="detail-label">ID Image:</div>
+                <div class="detail-value">Uploaded</div>
+            </div>
+        }
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="PartitionKey" />
+        <input type="hidden" asp-for="RowKey" />
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt icon-left"></i>Confirm Delete
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-times icon-left"></i>Cancel
+            </a>
+        </div>
+    </form>
 </div>
 
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="PartitionKey" />
-    <input type="hidden" asp-for="RowKey" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

@@ -4,93 +4,378 @@
     ViewData["Title"] = "Create Order";
 }
 
-<div class="container">
-    <!-- Display success/error messages -->
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+        --success-green: #28a745;
+        --danger-red: #dc3545;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .order-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light-blue-2);
+    }
+
+    h1 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .page-icon {
+        background-color: var(--light-blue-2);
+        color: var(--dark-blue-1);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .alert {
+        border-radius: 6px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #155724;
+        border-left: 4px solid var(--success-green);
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #721c24;
+        border-left: 4px solid var(--danger-red);
+    }
+
+    .validation-summary-errors {
+        background-color: rgba(220, 53, 69, 0.05);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 6px;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #721c24;
+        border-left: 4px solid var(--danger-red);
+    }
+
+        .validation-summary-errors ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+    .form-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--dark-blue-2) 0%, var(--dark-blue-4) 100%);
+        color: white;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label.form-label {
+        font-weight: 500;
+        color: var(--dark-blue-2);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 0.75rem;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--medium-blue-1);
+            box-shadow: 0 0 0 0.2rem rgba(42, 111, 151, 0.25);
+        }
+
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+        }
+
+    .text-danger {
+        color: #d32f2f !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .row.g-3 {
+        margin-right: -0.75rem;
+        margin-left: -0.75rem;
+    }
+
+        .row.g-3 > [class^="col-"] {
+            padding-right: 0.75rem;
+            padding-left: 0.75rem;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 0.7rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        box-shadow: 0 3px 7px rgba(42, 111, 151, 0.2);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(42, 111, 151, 0.25);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .icon-left {
+        margin-right: 0.5rem;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-group-prepend {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 5;
+        color: #6c757d;
+    }
+
+    .currency-input {
+        padding-left: 30px;
+    }
+
+    .select-arrow {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px;
+    }
+
+    @@media (max-width: 768px) {
+        .order-container
+
+    {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    }
+</style>
+
+<div class="order-container">
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle mr-2"></i>@TempData["Success"]
+        </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle mr-2"></i>@TempData["Error"]
+        </div>
     }
 
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5>Create New Order</h5>
+    <div class="page-header">
+        <h1>
+            <span class="page-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </span>
+            Create New Order
+        </h1>
+    </div>
+
+    <div class="form-card">
+        <div class="card-header">
+            <i class="fas fa-file-invoice mr-2"></i>Order Information
         </div>
         <div class="card-body">
             <form asp-action="Create" method="post">
-
                 @Html.AntiForgeryToken()
 
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
-                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    <div asp-validation-summary="All" class="validation-summary-errors"></div>
                 }
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Customer</label>
-                        <select asp-for="CustomerRowKey" class="form-select" required>
-                            <option value="">Select Customer</option>
-                            @if (ViewBag.Customers != null)
-                            {
-                                foreach (var customer in ViewBag.Customers as List<Retail3.Models.Customer>)
+                        <div class="form-group">
+                            <label class="form-label">Customer</label>
+                            <select asp-for="CustomerRowKey" class="form-select select-arrow" required>
+                                <option value="">Select Customer</option>
+                                @if (ViewBag.Customers != null)
                                 {
-                                    <option value="@customer.RowKey">@customer.FullName</option>
+                                    foreach (var customer in ViewBag.Customers as List<Retail3.Models.Customer>)
+                                    {
+                                        <option value="@customer.RowKey">@customer.FullName</option>
+                                    }
                                 }
-                            }
-                        </select>
-                        <span asp-validation-for="CustomerRowKey" class="text-danger"></span>
+                            </select>
+                            <span asp-validation-for="CustomerRowKey" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Product</label>
-                        <select asp-for="ProductRowKey" class="form-select" required id="productSelect">
-                            <option value="">Select Product</option>
-                            @if (ViewBag.Products != null)
-                            {
-                                foreach (var product in ViewBag.Products as List<Retail3.Models.Product>)
+                        <div class="form-group">
+                            <label class="form-label">Product</label>
+                            <select asp-for="ProductRowKey" class="form-select select-arrow" required id="productSelect">
+                                <option value="">Select Product</option>
+                                @if (ViewBag.Products != null)
                                 {
-                                    <option value="@product.RowKey" data-price="@product.Price">@product.ProductName - @product.Price.ToString("C")</option>
+                                    foreach (var product in ViewBag.Products as List<Retail3.Models.Product>)
+                                    {
+                                        <option value="@product.RowKey" data-price="@product.Price">@product.ProductName - @product.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</option>
+                                    }
                                 }
-                            }
-                        </select>
-                        <span asp-validation-for="ProductRowKey" class="text-danger"></span>
+                            </select>
+                            <span asp-validation-for="ProductRowKey" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="OrderDate" class="form-label"></label>
-                        <input asp-for="OrderDate" class="form-control" type="date"
-                               value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
-                        <span asp-validation-for="OrderDate" class="text-danger"></span>
+                        <div class="form-group">
+                            <label asp-for="OrderDate" class="form-label">Order Date</label>
+                            <input asp-for="OrderDate" class="form-control" type="date"
+                                   value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                            <span asp-validation-for="OrderDate" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="TotalAmount" class="form-label"></label>
-                        <input asp-for="TotalAmount" class="form-control" type="number" step="0.01" min="0"
-                               id="totalAmount" readonly required />
-                        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                        <div class="form-group">
+                            <label asp-for="TotalAmount" class="form-label">Total Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-prepend">R</span>
+                                <input asp-for="TotalAmount" class="form-control currency-input" type="number" step="0.01" min="0"
+                                       id="totalAmount" readonly required />
+                            </div>
+                            <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Status" class="form-label"></label>
-                        <select asp-for="Status" class="form-select" required>
-                            <option value="">Select Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                        <span asp-validation-for="Status" class="text-danger"></span>
+                        <div class="form-group">
+                            <label asp-for="Status" class="form-label">Status</label>
+                            <select asp-for="Status" class="form-select select-arrow" required>
+                                <option value="">Select Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <div class="col-12">
-                        <div class="form-group mt-4">
-                            <button type="submit" class="btn btn-primary">Create Order</button>
-                            <a asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check-circle icon-left"></i>Create Order
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left icon-left"></i>Back to Orders
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -99,27 +384,48 @@
     </div>
 </div>
 
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Auto-set total amount when product is selected
-            $('#productSelect').change(function() {
-                var selectedOption = $(this).find('option:selected');
-                var price = selectedOption.data('price');
+            const productSelect = document.getElementById('productSelect');
+            const totalAmount = document.getElementById('totalAmount');
 
-                if (price) {
-                    $('#totalAmount').val(price);
-                } else {
-                    $('#totalAmount').val('0.00');
-                }
-            });
+            if (productSelect && totalAmount) {
+                productSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const price = selectedOption.getAttribute('data-price');
+
+                    if (price) {
+                        totalAmount.value = parseFloat(price).toFixed(2);
+                    } else {
+                        totalAmount.value = '0.00';
+                    }
+                });
+            }
 
             // Set default status to Pending
-            $('#Status').val('Pending');
+            const statusSelect = document.getElementById('Status');
+            if (statusSelect) {
+                statusSelect.value = 'Pending';
+            }
+
+            // Set today's date as default if not already set
+            const orderDate = document.querySelector('input[name="OrderDate"]');
+            if (orderDate && !orderDate.value) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                orderDate.value = `${yyyy}-${mm}-${dd}`;
+            }
         });
     </script>
 }

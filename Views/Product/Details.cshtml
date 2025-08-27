@@ -4,51 +4,337 @@
     ViewData["Title"] = "Product Details";
 }
 
-<div class="container mt-4">
+<style>
+    /* Color variables based on the provided palette */
+    :root {
+        --dark-blue-1: #012a4a;
+        --dark-blue-2: #013a63;
+        --dark-blue-3: #01497c;
+        --dark-blue-4: #014f86;
+        --medium-blue-1: #2a6f97;
+        --medium-blue-2: #2c7da0;
+        --medium-blue-3: #468faf;
+        --light-blue-1: #61a5c2;
+        --light-blue-2: #89c2d9;
+        --light-blue-3: #a9d6e5;
+        --success-green: #28a745;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .details-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+        color: var(--dark-blue-1);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--light-blue-2);
+        display: flex;
+        align-items: center;
+    }
+
+    .page-icon {
+        background-color: var(--light-blue-2);
+        color: var(--dark-blue-1);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .alert {
+        border-radius: 6px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #155724;
+        border-left: 4px solid var(--success-green);
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+
+    .product-card {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-image-section {
+        flex: 0 0 300px;
+    }
+
+    .product-info-section {
+        flex: 1;
+    }
+
+    .product-image-container {
+        background-color: rgba(169, 214, 229, 0.15);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        border-left: 4px solid var(--medium-blue-2);
+    }
+
+    .product-image {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 4px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .no-image {
+        color: #6c757d;
+        font-style: italic;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border: 1px dashed #dee2e6;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: var(--dark-blue-3);
+        padding: 0.5rem 0;
+    }
+
+    .detail-value {
+        color: #495057;
+        padding: 0.5rem 0;
+    }
+
+    .product-name {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--dark-blue-1);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--light-blue-2);
+    }
+
+    .category-badge {
+        display: inline-block;
+        background-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .price-value {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--dark-blue-2);
+        margin: 0.5rem 0;
+    }
+
+    .stock-info {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        background-color: @(Model.StockQuantity > 10 ? "rgba(40, 167, 69, 0.1)" : "rgba(255, 193, 7, 0.1)");
+        color: @(Model.StockQuantity > 10 ? "#155724" : "#856404");
+        border: 1px solid @(Model.StockQuantity > 10 ? "rgba(40, 167, 69, 0.2)" : "rgba(255, 193, 7, 0.2)");
+    }
+
+    .description-text {
+        line-height: 1.6;
+        padding: 1rem;
+        background-color: rgba(169, 214, 229, 0.1);
+        border-radius: 6px;
+        border-left: 3px solid var(--medium-blue-1);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn {
+        padding: 0.7rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--medium-blue-1);
+        box-shadow: 0 3px 7px rgba(42, 111, 151, 0.2);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue-3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(42, 111, 151, 0.25);
+        }
+
+    .btn-secondary {
+        background-color: var(--light-blue-3);
+        color: var(--dark-blue-1);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--light-blue-2);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+        }
+
+    .icon-left {
+        margin-right: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .details-container
+
+    {
+        padding: 1.5rem;
+    }
+
+    .product-card {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .product-image-section {
+        flex: none;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .detail-label {
+        padding-bottom: 0.2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    }
+</style>
+
+<div class="details-container">
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle mr-2"></i>@TempData["Error"]
+        </div>
     }
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle mr-2"></i>@TempData["Success"]
+        </div>
     }
 
-    <h1>Product Details</h1>
-    <hr />
+    <h1>
+        <span class="page-icon">
+            <i class="fas fa-cube"></i>
+        </span>
+        Product Details
+    </h1>
 
-    <dl class="row">
-        <dt class="col-sm-3">Image</dt>
-        <dd class="col-sm-9">
-            @if (!string.IsNullOrEmpty(Model.productImageURL))
-            {
-                <img src="@Model.productImageURL" alt="@Model.ProductName"
-                     class="img-thumbnail" style="max-width:150px;" />
-            }
-            else
-            {
-                <span class="text-muted">No Image</span>
-            }
-        </dd>
+    <div class="product-card">
+        <div class="product-image-section">
+            <div class="product-image-container">
+                @if (!string.IsNullOrEmpty(Model.productImageURL))
+                {
+                    <img src="@Model.productImageURL" alt="@Model.ProductName" class="product-image" />
+                }
+                else
+                {
+                    <div class="no-image">
+                        <i class="fas fa-image fa-2x mb-2"></i>
+                        <p>No image available</p>
+                    </div>
+                }
+            </div>
+        </div>
 
-        <dt class="col-sm-3">Product Name</dt>
-        <dd class="col-sm-9">@Model.ProductName</dd>
+        <div class="product-info-section">
+            <div class="product-name">@Model.ProductName</div>
+            <div class="category-badge">@Model.Category</div>
 
-        <dt class="col-sm-3">Category</dt>
-        <dd class="col-sm-9">@Model.Category</dd>
+            <div class="detail-grid">
+                <div class="detail-label">Price:</div>
+                <div class="detail-value price-value">@Model.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</div>
 
-        <dt class="col-sm-3">Description</dt>
-        <dd class="col-sm-9">@Model.Description</dd>
+                <div class="detail-label">Stock Quantity:</div>
+                <div class="detail-value">
+                    <span class="stock-info">@Model.StockQuantity in stock</span>
+                </div>
 
-        <dt class="col-sm-3">Price</dt>
-        <dd class="col-sm-9">@Model.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</dd>
+                <div class="detail-label">Description:</div>
+                <div class="detail-value description-text">@Model.Description</div>
+            </div>
+        </div>
+    </div>
 
-        <dt class="col-sm-3">Stock Quantity</dt>
-        <dd class="col-sm-9">@Model.StockQuantity</dd>
-    </dl>
-
-    <div class="mt-3">
-        <a asp-action="Edit" asp-route-id="@Model.RowKey" class="btn btn-primary">Edit</a>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <div class="action-buttons">
+        <a asp-action="Edit" asp-route-id="@Model.RowKey" class="btn btn-primary">
+            <i class="fas fa-edit icon-left"></i>Edit Product
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left icon-left"></i>Back to List
+        </a>
     </div>
 </div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
