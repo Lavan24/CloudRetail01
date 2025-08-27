@@ -13,7 +13,6 @@ namespace Retail3.Services.Interface
         Task UpdateCustomerAsync(Customer customer);
         Task DeleteCustomerAsync(string partitionKey, string rowKey);
 
-
         // =====================
         // Product operations
         // =====================
@@ -29,6 +28,10 @@ namespace Retail3.Services.Interface
         Task<Order> BuyProductAsync(string memberRowKey, string productRowKey);
         Task<Order> ReturnProductAsync(string loanRowKey);
         Task<List<Order>> GetCustomerBoughtAsync();
+        Task<Order?> GetOrderAsync(string rowKey);
+        Task UpdateOrderAsync(Order order);
+        Task DeleteOrderAsync(string partitionKey, string rowKey);
+        Task<List<Order>> GetOverdueOrdersAsync();
 
         // =====================
         // Activity tracking

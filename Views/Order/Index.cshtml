@@ -1,3 +1,4 @@
+@using System.Globalization
 @model IEnumerable<Retail3.Models.Order>
 
 @{
@@ -84,7 +85,7 @@
                                     <td>@order.FullName</td>
                                     <td>@order.ProductName</td>
                                     <td>@order.OrderDate.ToString("d")</td>
-                                    <td>@order.TotalAmount.ToString("C")</td>
+                                    <td>@order.Price.ToString( new CultureInfo("en-ZA"))</td>
                                     <td>
                                         <span class="badge @GetStatusBadgeClass(order.Status)">
                                             @order.Status

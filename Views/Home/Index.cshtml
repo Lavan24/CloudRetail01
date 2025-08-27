@@ -89,7 +89,7 @@
             }
 
         .fade {
-            animation: fade 1.5s ease-in-out;
+            animation: fade 4s ease-in-out;
         }
 
         @@keyframes fade {
@@ -344,27 +344,27 @@
         <div class="tagline">Discover Extraordinary Art</div>
     </header>
 
-    <!-- Slideshow with local images -->
     <div class="slideshow-container">
         <div class="slide fade">
-            <img src="Images/Image1.jpg" alt="Artwork 1">
+            <img src="/Images/Image1.jpg" alt="Artwork 1">
         </div>
         <div class="slide fade">
-            <img src="Images/Image2.jpg" alt="Artwork 2">
+            <img src="/Images/Image2.jpg" alt="Artwork 2">
         </div>
         <div class="slide fade">
-            <img src="Images/Image3.jpg" alt="Artwork 3">
+            <img src="/Images/Image3.jpg" alt="Artwork 3">
         </div>
         <div class="slide fade">
-            <img src="Images/Image4.jpg" alt="Artwork 4">
+            <img src="/Images/Image4.jpg" alt="Artwork 4">
         </div>
         <div class="slide fade">
-            <img src="Images/Image5.jpg" alt="Artwork 5">
+            <img src="/Images/Image5.jpg" alt="Artwork 5">
         </div>
         <div class="slide fade">
-            <img src="Images/Image6.jpg" alt="Artwork 6">
+            <img src="/Images/Image6.jpg" alt="Artwork 6">
         </div>
     </div>
+
 
     <div class="dots">
         <span class="dot" onclick="currentSlide(1)"></span>
@@ -477,7 +477,7 @@
 
           slides[slideIndex-1].style.display = "block";
           dots[slideIndex-1].className += " active";
-          setTimeout(showSlides, 4000); // Change image every 4 seconds
+          setTimeout(showSlides, 6000);
         }
 
         function currentSlide(n) {

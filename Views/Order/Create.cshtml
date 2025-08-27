@@ -1,4 +1,5 @@
 @model Retail3.Models.Order
+
 @{
     ViewData["Title"] = "Create Order";
 }
@@ -35,7 +36,7 @@
                             <option value="">Select Customer</option>
                             @if (ViewBag.Customers != null)
                             {
-                                foreach (var customer in ViewBag.Customers)
+                                foreach (var customer in ViewBag.Customers as List<Retail3.Models.Customer>)
                                 {
                                     <option value="@customer.RowKey">@customer.FullName</option>
                                 }
@@ -46,11 +47,11 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Product</label>
-                        <select asp-for="ProductRowKey" class="form-select" required>
+                        <select asp-for="ProductRowKey" class="form-select" required id="productSelect">
                             <option value="">Select Product</option>
                             @if (ViewBag.Products != null)
                             {
-                                foreach (var product in ViewBag.Products)
+                                foreach (var product in ViewBag.Products as List<Retail3.Models.Product>)
                                 {
                                     <option value="@product.RowKey" data-price="@product.Price">@product.ProductName - @product.Price.ToString("C")</option>
                                 }
@@ -106,7 +107,7 @@
     <script>
         $(document).ready(function() {
             // Auto-set total amount when product is selected
-            $('#ProductRowKey').change(function() {
+            $('#productSelect').change(function() {
                 var selectedOption = $(this).find('option:selected');
                 var price = selectedOption.data('price');
 

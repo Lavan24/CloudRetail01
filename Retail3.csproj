@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Images\Image1.jpg" />
+    <None Include="wwwroot\Images\Image2.jpg" />
+    <None Include="wwwroot\Images\Image3.jpg" />
+    <None Include="wwwroot\Images\Image4.jpg" />
+    <None Include="wwwroot\Images\Image5.jpg" />
+    <None Include="wwwroot\Images\Image6.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.47.3" />
     <PackageReference Include="Azure.Data.Tables" Version="12.11.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />

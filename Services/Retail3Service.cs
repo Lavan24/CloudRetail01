@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.Json;
 using Retail3.Models;
 using Azure;
-
+using Microsoft.AspNetCore.Http;
 
 namespace Retail3.Services
 {
@@ -12,7 +12,7 @@ namespace Retail3.Services
     {
         // -------------------- Table and storage names --------------------
         private const string CustomersTable = "customers";
-        private const string ProductsTable = "products";   // ✅ Fixed typo
+        private const string ProductsTable = "products";
         private const string OrdersTable = "orders";
         private const string CoversContainer = "productimages";
         private const string ActivityQueue = "retailactivities";
@@ -81,6 +81,7 @@ namespace Retail3.Services
             if (productImage != null && productImage.Length > 0)
                 product.productImageURL = await _blobStorage.UploadFileAsync(CoversContainer, productImage);
 
+            product.PartitionKey = "products";
             product.RowKey = Guid.NewGuid().ToString();
             await _tableStorage.AddEntityAsync(ProductsTable, product);
             await SendActivityMessageAsync($"New product added: '{product.ProductName}'");
@@ -130,7 +131,6 @@ namespace Retail3.Services
             await SendActivityMessageAsync($"Product updated: '{product.ProductName}'");
         }
 
-
         public async Task DeleteProductAsync(string rowKey)
         {
             var product = await GetProductAsync(rowKey);
@@ -156,26 +156,31 @@ namespace Retail3.Services
             if (customer == null || product == null || product.StockQuantity <= 0)
                 throw new InvalidOperationException("Invalid product or customer");
 
+            // Convert product.Price (double) to decimal for currency calculations
+            decimal priceDecimal = Convert.ToDecimal(product.Price);
+
             var order = new Order
             {
+                PartitionKey = "orders",
                 RowKey = Guid.NewGuid().ToString(),
                 CustomerRowKey = customerRowKey,
                 ProductRowKey = productRowKey,
                 OrderDate = DateTime.UtcNow,
-                TotalAmount = (decimal)product.Price,
+                TotalAmount = priceDecimal,   // correctly saved as decimal
                 Status = "Completed",
                 FullName = customer.FullName,
                 ProductName = product.ProductName,
-                Price = product.Price.ToString("C", new CultureInfo("en-ZA"))
+                Price = priceDecimal.ToString("C", new CultureInfo("en-ZA")) // stored as formatted string (e.g. R200.00)
             };
 
             await _tableStorage.AddEntityAsync(OrdersTable, order);
 
+            // reduce stock
             product.StockQuantity--;
             await _tableStorage.UpdateEntityAsync(ProductsTable, product);
 
             await SendActivityMessageAsync(
-                $"Order placed: {customer.FullName} bought '{product.ProductName}'");
+                $"Order placed: {customer.FullName} bought '{product.ProductName}' for {order.Price}");
 
             return order;
         }
@@ -208,7 +213,44 @@ namespace Retail3.Services
         {
             return await _tableStorage.QueryEntitiesAsync<Order>(
                 OrdersTable,
-                $"PartitionKey eq 'orders' and Status eq 'Completed'");
+                $"PartitionKey eq 'orders'");
+        }
+
+        public async Task<Order?> GetOrderAsync(string rowKey)
+        {
+            try
+            {
+                return await _tableStorage.GetEntityAsync<Order>(
+                    OrdersTable, "orders", rowKey);
+            }
+            catch { return null; }
+        }
+
+        public async Task UpdateOrderAsync(Order order)
+        {
+            if (string.IsNullOrEmpty(order.RowKey))
+                throw new ArgumentException("Order ID is required");
+
+            // Get customer and product details for denormalized data
+            var customer = await GetCustomerAsync(order.CustomerRowKey);
+            var product = await GetProductAsync(order.ProductRowKey);
+
+            if (customer == null || product == null)
+                throw new InvalidOperationException("Invalid customer or product selected");
+
+            // Update denormalized data
+            order.FullName = customer.FullName;
+            order.ProductName = product.ProductName;
+            order.Price = product.Price.ToString("C", new CultureInfo("en-ZA"));
+
+            await _tableStorage.UpdateEntityAsync(OrdersTable, order);
+            await SendActivityMessageAsync($"Order updated: {order.RowKey}");
+        }
+
+        public async Task DeleteOrderAsync(string partitionKey, string rowKey)
+        {
+            await _tableStorage.DeleteEntityAsync(OrdersTable, partitionKey, rowKey);
+            await SendActivityMessageAsync($"Order deleted: {rowKey}");
         }
 
         public async Task<List<Order>> GetOverdueOrdersAsync()
@@ -223,7 +265,15 @@ namespace Retail3.Services
         // -------------------- ACTIVITY TRACKING --------------------
         public async Task SendActivityMessageAsync(string message)
         {
-            try { await _queueService.SendMessageAsync(ActivityQueue, message); }
+            try
+            {
+                var activityMessage = new
+                {
+                    Timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"),
+                    Message = message
+                };
+                await _queueService.SendMessageAsync(ActivityQueue, JsonSerializer.Serialize(activityMessage));
+            }
             catch { }
         }
 

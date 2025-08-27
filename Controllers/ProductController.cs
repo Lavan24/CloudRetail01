@@ -133,12 +133,14 @@ namespace Retail3.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Make sure the RowKey matches
             if (id != product.RowKey)
             {
                 TempData["Error"] = "Product ID mismatch.";
                 return RedirectToAction(nameof(Index));
             }
 
+            // Validate model
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Please correct the validation errors below.";
@@ -150,6 +152,7 @@ namespace Retail3.Controllers
                 // Ensure partition key is set
                 product.PartitionKey = "products";
 
+                // Update product via service
                 await _retailService.UpdateProductAsync(product, productImage);
 
                 TempData["Success"] = $"Product '{product.ProductName}' updated successfully!";
@@ -162,6 +165,7 @@ namespace Retail3.Controllers
                 return View(product);
             }
         }
+
 
         // GET: /Product/Delete/{id} - Added GET method for confirmation page
         public async Task<IActionResult> Delete(string id)
