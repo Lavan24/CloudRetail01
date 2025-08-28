@@ -31,6 +31,7 @@ namespace Retail3
             builder.Services.AddScoped<ITableStorageService, TableStorageService>();
             builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
             builder.Services.AddScoped<IQueueService, QueueService>();
+            builder.Services.AddScoped<IContractStorageService, ContractStorageService>();
             builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
 
 

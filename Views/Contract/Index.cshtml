@@ -1,0 +1,32 @@
+﻿@model List<string>
+@{
+    ViewData["Title"] = "Contracts";
+}
+
+<h2>Upload Contract</h2>
+<form asp-action="UploadContract" asp-controller="Contract" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="application/pdf" required />
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+<h2>Available Contracts</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>File Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var file in Model)
+        {
+            <tr>
+                <td>@file</td>
+                <td>
+                    <a asp-action="Download" asp-controller="Contract" asp-route-fileName="@file" class="btn btn-success">Download</a>
+                    <a href="https://<yourstorageaccount>.file.core.windows.net/contracts/@file" target="_blank" class="btn btn-info">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
